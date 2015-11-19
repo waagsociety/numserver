@@ -3,16 +3,22 @@ a backend for led displays
 
 installation:
 
-clone the repo
+install git if not installed (https://git-scm.com/)
 
-install nodejs
+install nodejs if not installed(https://nodejs.org/en/)
 
-run `npm install` from project folder
+open a terminal and go to the folder where you want it in
 
-to start once: `npm start`
+clone the repo: `git clone https://github.com/waagsociety/numserver.git`
+
+`cd numserver`
+
+`npm install`
+
+to start in terminal: `npm start`
 
 to start in background:
 
 `npm install forever -g`
 
-`forever start index.js` (from folder)
+`forever start index.js`
