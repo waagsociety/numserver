@@ -10,6 +10,7 @@ install nodejs
 run `npm install` from project folder
 
 to start once: `npm start`
+
 to start in background:
 
 `npm install forever -g`
