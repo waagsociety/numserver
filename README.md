@@ -24,3 +24,7 @@ to start in background:
 `npm install forever -g`
 
 `forever start index.js`
+
+the only route at the moment is:
+
+(ip/localhost):2000/reisTijdenAmsterdam
