@@ -76,7 +76,7 @@ function fetchUpdate(){
 			
 			fs.appendFile( valueStoreFilename, [
 				new Date().toISOString(),
-				responseTime
+				responseTime,
 				kmhAvg,
 				constipation,
 				kmhAvgH,
