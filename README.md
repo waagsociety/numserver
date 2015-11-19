@@ -14,4 +14,5 @@ to start once: `npm start`
 to start in background:
 
 `npm install forever -g`
+
 `forever start index.js` (from folder)
