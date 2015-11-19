@@ -1,9 +1,12 @@
 var app = require('express')(),
 		request = require('request'),
 		fs = require('fs'),
-		previousData = require('../previous.json'),
+		storedData = require('../storedData.json'),
+		extremes = storedData.extremes,
+		min = 100,
+		max = 0,
 		value;
-
+console.log(extremes);
 setInterval( fetchUpdate, 1000 * 60 * 5 );
 fetchUpdate();
 
@@ -26,18 +29,19 @@ function fetchUpdate(){
 
 		//console.log(features.length);
 
-		var crunched = crunch( features );
+		var crunched = crunch( features ),
+				travelTimeOverLength = crunched.travelTimeOverLength;
 
-		//console.log( crunched );
+		extremes[ 0 ] = Math.min( travelTimeOverLength, extremes[ 0 ] );
+		extremes[ 1 ] = Math.max( travelTimeOverLength, extremes[ 1 ] );
 
-		fs.writeFile('./previous.json', JSON.stringify( crunched, false, 2));
+		fs.writeFile( './storedData.json', JSON.stringify( {
+			extremes: extremes
+		} ) );
 
-		var delta = createDelta( previousData.travelTimeOverLength, crunched.travelTimeOverLength );
-		previousData = crunched;
+		value = fit( travelTimeOverLength, extremes[ 0 ], extremes[ 1 ], min, max );
 
-		console.log(delta, crunched.travelTimeOverLength );
-
-		value = delta;
+		console.log( value, travelTimeOverLength, extremes );
 	});
 }
 
@@ -87,10 +91,9 @@ function crunch( features ){
 	};
 }
 
-function createDelta(previous, current){
-	var delta;
-	if( current > previous) delta = current / previous - 1;
-	else if( current < previous ) delta = -previous / current + 1;
-	else delta = 0;
-	return delta * 100;
+function fit( value, min, max, start, end ) {
+	value = Math.max( Math.min( value, max ), min );
+	var range1 = max - min,
+		range2 = end - start;
+	return ( ( ( value - min ) / range1 ) * range2 ) + start;
 }
