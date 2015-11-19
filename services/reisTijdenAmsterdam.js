@@ -3,10 +3,10 @@ var app = require('express')(),
 		fs = require('fs'),
 		storedData = require('../storedData.json'),
 		extremes = storedData.extremes,
-		min = 100,
-		max = 0,
+		min = 0,
+		max = 100,
 		value;
-console.log(extremes);
+
 setInterval( fetchUpdate, 1000 * 60 * 5 );
 fetchUpdate();
 
@@ -40,8 +40,6 @@ function fetchUpdate(){
 		} ) );
 
 		value = fit( travelTimeOverLength, extremes[ 0 ], extremes[ 1 ], min, max );
-
-		console.log( value, travelTimeOverLength, extremes );
 	});
 }
 
@@ -94,6 +92,6 @@ function crunch( features ){
 function fit( value, min, max, start, end ) {
 	value = Math.max( Math.min( value, max ), min );
 	var range1 = max - min,
-		range2 = end - start;
+			range2 = end - start;
 	return ( ( ( value - min ) / range1 ) * range2 ) + start;
 }
