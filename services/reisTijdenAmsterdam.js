@@ -46,8 +46,8 @@ function fetchUpdate(){
 		extremes[ 1 ] = Math.max( kmhAvg, extremes[ 1 ] );
 		extremesH[ 0 ] = Math.min( kmhAvgH, extremesH[ 0 ]);
 		extremesH[ 1 ] = Math.max( kmhAvgH, extremesH[ 1 ]);
-		extremesO[ 0 ] = Math.min( kmhAvgH, extremesO[ 0 ]);
-		extremesO[ 1 ] = Math.max( kmhAvgH, extremesO[ 1 ]);
+		extremesO[ 0 ] = Math.min( kmhAvgO, extremesO[ 0 ]);
+		extremesO[ 1 ] = Math.max( kmhAvgO, extremesO[ 1 ]);
 
 		fs.writeFile( './storedData.json', JSON.stringify( {
 			extremes: extremes,
@@ -73,7 +73,7 @@ function fetchUpdate(){
 				'km/h O',
 				'constipation O'
 			].join( ', ' ) + '\n', 'utf8' );
-			
+
 			fs.appendFile( valueStoreFilename, [
 				new Date().toISOString(),
 				responseTime,
