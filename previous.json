@@ -1,0 +1,18 @@
+{
+  "travelTimeTotal": 50026,
+  "lengthTotal": 901.418,
+  "travelTimeOverLength": 55.4970058285945,
+  "statsByType": {
+    "H": {
+      "travelTimeOverLength": 36.12109262314136,
+      "length": 357049,
+      "travelTime": 12897
+    },
+    "O": {
+      "travelTimeOverLength": 68.20557379277659,
+      "length": 544369,
+      "travelTime": 37129
+    }
+  },
+  "unavailableSegments": 20
+}
