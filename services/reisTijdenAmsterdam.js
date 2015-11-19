@@ -2,16 +2,21 @@ var app = require('express')(),
 		request = require('request'),
 		fs = require('fs'),
 		storedData = require('../storedData.json'),
-		extremes = storedData.extremes,
+		valueStoreFilename = './values.csv',
+		extremes = storedData.extremes || [ Infinity, -Infinity ],
+		extremesH = storedData.extremesH || [ Infinity, -Infinity ],
+		extremesO = storedData.extremesO || [ Infinity, -Infinity ],
 		min = 0,
 		max = 100,
-		value;
+		constipation,
+		constipationH,
+		constipationO;
 
-setInterval( fetchUpdate, 1000 * 60 * 5 );
 fetchUpdate();
+setInterval( fetchUpdate, 1000 * 60 * 5 );
 
 app.get('/', function( req, res ) {
-	res.send( '' + value );
+	res.send( '' + constipation );
 } );
 
 module.exports = app;
@@ -30,17 +35,52 @@ function fetchUpdate(){
 		//console.log(features.length);
 
 		var crunched = crunch( features ),
-				travelTimeOverLength = crunched.travelTimeOverLength;
+				kmhAvg = crunched.kmhAvg,
+				kmhAvgH = crunched.statsByType.H.kmhAvg,
+				kmhAvgO = crunched.statsByType.O.kmhAvg;
 
-		extremes[ 0 ] = Math.min( travelTimeOverLength, extremes[ 0 ] );
-		extremes[ 1 ] = Math.max( travelTimeOverLength, extremes[ 1 ] );
+		extremes[ 0 ] = Math.min( kmhAvg, extremes[ 0 ] );
+		extremes[ 1 ] = Math.max( kmhAvg, extremes[ 1 ] );
+		extremesH[ 0 ] = Math.min( kmhAvgH, extremesH[ 0 ]);
+		extremesH[ 1 ] = Math.max( kmhAvgH, extremesH[ 1 ]);
+		extremesO[ 0 ] = Math.min( kmhAvgH, extremesO[ 0 ]);
+		extremesO[ 1 ] = Math.max( kmhAvgH, extremesO[ 1 ]);
 
 		fs.writeFile( './storedData.json', JSON.stringify( {
-			extremes: extremes
+			extremes: extremes,
+			extremesH: extremesH,
+			extremesO: extremesO
 		} ) );
 
-		value = fit( travelTimeOverLength, extremes[ 0 ], extremes[ 1 ], min, max );
-	});
+		constipation = fit( kmhAvg, extremes[ 0 ], extremes[ 1 ], min, max );
+		constipationH = fit( kmhAvgH, extremesH[ 0 ], extremesH[ 1 ], min, max );
+		constipationO = fit( kmhAvgO, extremesO[ 0 ], extremesO[ 1 ], min, max );
+		console.log( 'constipation:', constipation, kmhAvg, extremes );
+		console.log( 'constipationH:', constipationH, kmhAvgH, extremesH );
+		console.log( 'constipationO:', constipationO, kmhAvgO, extremesO );
+
+		fs.exists( valueStoreFilename, function( exists ){
+			if( !exists ) fs.writeFileSync( valueStoreFilename, [
+				'time',
+				'km/h',
+				'constipation',
+				'km/h H',
+				'constipation H',
+				'km/h O',
+				'constipation O'
+			].join( ', ' ) + '\n', 'utf8' );
+			
+			fs.appendFile( valueStoreFilename, [
+				new Date().toISOString(),
+				kmhAvg,
+				constipation,
+				kmhAvgH,
+				constipationH,
+				kmhAvgO,
+				constipationO
+			].join( ', ' ) + '\n' );
+		} );
+	} );
 }
 
 function crunch( features ){
@@ -74,7 +114,7 @@ function crunch( features ){
 
 	Object.keys( lengthByType ).forEach( function( type ) {
 		statsByType[ type ] = {
-			travelTimeOverLength: travelTimesByType[ type ] / lengthByType[ type ] * 1000,
+			kmhAvg: travelTimesByType[ type ] / lengthByType[ type ] * 1000,
 			length: lengthByType[ type ],
 			travelTime: travelTimesByType[ type ]
 		};
@@ -83,7 +123,7 @@ function crunch( features ){
 	return {
 		travelTimeTotal: travelTimeTotal,
 		lengthTotal: lengthTotal / 1000,
-		travelTimeOverLength: travelTimeTotal / lengthTotal * 1000,
+		kmhAvg: travelTimeTotal / lengthTotal * 1000,
 		statsByType: statsByType,
 		unavailableSegments: unavailableSegments
 	};
