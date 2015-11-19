@@ -22,6 +22,7 @@ app.get('/', function( req, res ) {
 module.exports = app;
 
 function fetchUpdate(){
+	var t = Date.now();
 	request.get( 'http://tools.amsterdamopendata.nl/ndw/data/reistijdenAmsterdam.geojson', function( err, response ){
 		//console.log(err || 'no error');
 		var features;
@@ -30,11 +31,13 @@ function fetchUpdate(){
 			features = JSON.parse( response.body ).features;
 		} catch( e ) {
 			console.log( e );
+			return;
 		}
 
 		//console.log(features.length);
 
-		var crunched = crunch( features ),
+		var responseTime = Date.now() - t,
+				crunched = crunch( features ),
 				kmhAvg = crunched.kmhAvg,
 				kmhAvgH = crunched.statsByType.H.kmhAvg,
 				kmhAvgO = crunched.statsByType.O.kmhAvg;
@@ -62,6 +65,7 @@ function fetchUpdate(){
 		fs.exists( valueStoreFilename, function( exists ){
 			if( !exists ) fs.writeFileSync( valueStoreFilename, [
 				'time',
+				'responseTime',
 				'km/h',
 				'constipation',
 				'km/h H',
@@ -72,6 +76,7 @@ function fetchUpdate(){
 			
 			fs.appendFile( valueStoreFilename, [
 				new Date().toISOString(),
+				responseTime
 				kmhAvg,
 				constipation,
 				kmhAvgH,
