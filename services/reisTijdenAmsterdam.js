@@ -24,7 +24,7 @@ app.get('/csv', function( req, res ) {
     if( err ) return next( err );
 
     res.writeHead( 200, {
-      'Content-Type': 'text/csv',
+      'Content-Type': 'text/plain',
       'Content-Length': stat.size
     } );
 
