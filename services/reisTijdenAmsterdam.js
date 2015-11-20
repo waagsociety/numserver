@@ -80,24 +80,24 @@ function fetchUpdate(){
     fs.exists( valueStoreFilename, function( exists ){
       if( !exists ) fs.writeFileSync( valueStoreFilename, [
         'time',
-        'responseTime',
         'km/h',
         'constipation',
         'km/h H',
         'constipation H',
         'km/h O',
-        'constipation O'
+        'constipation O',
+        'responseTime'
       ].join( ', ' ) + '\n', 'utf8' );
 
       fs.appendFile( valueStoreFilename, [
         new Date().toISOString(),
-        responseTime,
         kmhAvg,
         constipation,
         kmhAvgH,
         constipationH,
         kmhAvgO,
-        constipationO
+        constipationO,
+        responseTime
       ].join( ', ' ) + '\n' );
     } );
   } );
