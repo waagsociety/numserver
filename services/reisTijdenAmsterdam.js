@@ -6,8 +6,8 @@ var app = require('express')(),
 		extremes = storedData.extremes || [ Infinity, -Infinity ],
 		extremesH = storedData.extremesH || [ Infinity, -Infinity ],
 		extremesO = storedData.extremesO || [ Infinity, -Infinity ],
-		min = 0,
-		max = 100,
+		min = 100,
+		max = 0,
 		constipation,
 		constipationH,
 		constipationO;
@@ -20,6 +20,8 @@ app.get('/', function( req, res ) {
 } );
 
 module.exports = app;
+
+/// todo make entrainment module that uses If_Modified_Since
 
 function fetchUpdate(){
 	var t = Date.now();
@@ -38,9 +40,9 @@ function fetchUpdate(){
 
 		var responseTime = Date.now() - t,
 				crunched = crunch( features ),
-				kmhAvg = crunched.kmhAvg,
-				kmhAvgH = crunched.statsByType.H.kmhAvg,
-				kmhAvgO = crunched.statsByType.O.kmhAvg;
+				kmhAvg = 60 / crunched.travelTimeAvg * 60,
+				kmhAvgH = 60 / crunched.statsByType.H.kmhAvg * 60,
+				kmhAvgO = 60 / crunched.statsByType.O.kmhAvg * 60;
 
 		extremes[ 0 ] = Math.min( kmhAvg, extremes[ 0 ] );
 		extremes[ 1 ] = Math.max( kmhAvg, extremes[ 1 ] );
@@ -119,7 +121,7 @@ function crunch( features ){
 
 	Object.keys( lengthByType ).forEach( function( type ) {
 		statsByType[ type ] = {
-			kmhAvg: travelTimesByType[ type ] / lengthByType[ type ] * 1000,
+			travelTimeAvg: travelTimesByType[ type ] / lengthByType[ type ] * 1000,
 			length: lengthByType[ type ],
 			travelTime: travelTimesByType[ type ]
 		};
@@ -128,7 +130,7 @@ function crunch( features ){
 	return {
 		travelTimeTotal: travelTimeTotal,
 		lengthTotal: lengthTotal / 1000,
-		kmhAvg: travelTimeTotal / lengthTotal * 1000,
+		travelTimeAvg: travelTimeTotal / lengthTotal * 1000,
 		statsByType: statsByType,
 		unavailableSegments: unavailableSegments
 	};
