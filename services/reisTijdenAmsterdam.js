@@ -41,8 +41,8 @@ function fetchUpdate(){
 		var responseTime = Date.now() - t,
 				crunched = crunch( features ),
 				kmhAvg = 60 / crunched.travelTimeAvg * 60,
-				kmhAvgH = 60 / crunched.statsByType.H.kmhAvg * 60,
-				kmhAvgO = 60 / crunched.statsByType.O.kmhAvg * 60;
+				kmhAvgH = 60 / crunched.statsByType.H.travelTimeAvg * 60,
+				kmhAvgO = 60 / crunched.statsByType.O.travelTimeAvg * 60;
 
 		extremes[ 0 ] = Math.min( kmhAvg, extremes[ 0 ] );
 		extremes[ 1 ] = Math.max( kmhAvg, extremes[ 1 ] );
