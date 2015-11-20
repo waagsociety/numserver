@@ -19,6 +19,19 @@ app.get('/', function( req, res ) {
 	res.send( '' + constipation );
 } );
 
+app.get('/csv', function( req, res ) {
+	fs.stat( valueStoreFilename, function( err, stat ) {
+    if( err ) return next( err );
+
+		res.writeHead( 200, {
+	    'Content-Type': 'text/csv',
+	    'Content-Length': stat.size
+	  } );
+
+	  fs.createReadStream( valueStoreFilename ).pipe( res );
+	} );
+} );
+
 module.exports = app;
 
 /// todo make entrainment module that uses If_Modified_Since
